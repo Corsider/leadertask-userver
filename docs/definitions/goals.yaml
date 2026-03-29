@@ -1,0 +1,47 @@
+components:
+  schemas:
+    GetGoalsResponseBody:
+      type: array
+      items:
+        $ref: '#/components/schemas/Goal'
+    
+    Goal:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        userId:
+          type: integer
+      required: [id, title]
+
+    CreateGoalRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 3
+        description:
+          type: string
+          minLength: 0
+      required:
+        - title
+    
+    CreateGoalResponseBody:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        userId:
+          type: integer
+    
+
+    

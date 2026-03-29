@@ -1,0 +1,77 @@
+components:
+  schemas:
+    CreateUserRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        login:
+          type: string
+          minLength: 3
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+          minLength: 1
+        lastName:
+          type: string
+          minLength: 1
+      required:
+        - login
+        - password
+        - firstName
+        - lastName
+
+    CreateUserResponseBody:
+      type: object
+      additionalProperties: false
+      properties:
+        user_id:
+          type: integer
+          format: int64
+      required:
+        - user_id
+
+    LoginRequestBody:
+      type: object
+      additionalProperties: false
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+      required:
+        - login
+        - password
+
+    LoginResponseBody:
+      type: object
+      additionalProperties: false
+      properties:
+        accessToken:
+          type: string
+      required:
+        - accessToken
+
+    SearchResponseBody:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    
+    User:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        login:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+      required:
+        - id
+        - login
+        - first_name
+        - last_name

@@ -1,0 +1,375 @@
+openapi: 3.0.3
+info:
+  title: TaskPlanner API
+  version: 1.0.0
+  description: API системы планирования задач
+
+servers:
+  - url: http://localhost:8080
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/users/login:
+    post:
+      summary: Логин юзера (получение JWT)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Успешный логин
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/users:
+    post:
+      summary: Регистрация пользователя
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '200':
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/users/search:
+    get:
+      summary: Поиск пользователя
+      parameters:
+        - in: query
+          name: login
+          schema:
+            type: string
+        - in: query
+          name: firstNameMask
+          schema:
+            type: string
+        - in: query
+          name: lastNameMask
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Результат поиска
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/goals:
+    post:
+      summary: Создать цель
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGoalRequest'
+      responses:
+        '201':
+          description: Цель создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    get:
+      summary: Получить все цели
+      responses:
+        '200':
+          description: Список целей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Goal'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/goals/{goalId}/tasks:
+    post:
+      summary: Создать задачу
+      parameters:
+        - in: path
+          name: goalId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '201':
+          description: Задача создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    get:
+      summary: Получить задачи цели
+      parameters:
+        - in: path
+          name: goalId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/goals/{goalId}/tasks/{taskId}/status:
+    put:
+      summary: Обновить статус задачи
+      parameters:
+        - in: path
+          name: goalId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskStatusRequest'
+      responses:
+        '200':
+          description: Обновленная задача
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Неверный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Не авторизован или токен невалиден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Conflict:
+      description: Конфликт
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalError:
+      description: Внутренняя ошибка
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+      required: [login, password]
+
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: INVALID_TOKEN
+        message:
+          type: string
+          example: Token is invalid or expired
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        login:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required: [id, login]
+
+    CreateUserRequest:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required: [login, password, firstName, lastName]
+
+    Goal:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        userId:
+          type: integer
+      required: [id, title]
+
+    CreateGoalRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+      required: [title]
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        goalId:
+          type: integer
+        title:
+          type: string
+        status:
+          type: string
+          enum: [pending, in_progress, done]
+      required: [id, goalId, title, status]
+
+    CreateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+      required: [title]
+
+    UpdateTaskStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [todo, in_progress, done]
+      required: [status]
+    
+    CreateUserResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+      required: [userId]

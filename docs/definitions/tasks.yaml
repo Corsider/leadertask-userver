@@ -1,0 +1,47 @@
+components:
+  schemas:
+    CreateTaskRequestBody:
+      type: object
+      properties:
+        title:
+          type: string
+      required: [title]
+
+    CreateTaskResponseBody:
+      type: object
+      properties:
+        id:
+          type: integer
+        goalId:
+          type: integer
+        title:
+          type: string
+        status:
+          type: string
+      required: [id, goalId, title, status]
+    
+    ListTasksResponseBody:
+      type: array
+      items:
+        $ref: '#/components/schemas/Task'
+    
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        goalId:
+          type: integer
+        title:
+          type: string
+        status:
+          type: string
+      required: [id, goalId, title, status]
+      
+    UpdateTaskStatusRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+      required: [status]
