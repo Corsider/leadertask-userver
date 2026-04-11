@@ -3,7 +3,8 @@
 #include <userver/server/handlers/http_handler_json_base.hpp>
 #include <userver/yaml_config/schema.hpp>
 
-#include <users_storage.hpp>
+#include <repositories/users_repository_component.hpp>
+#include <repositories/users_repository.hpp>
 
 namespace jwt_auth::users {
 
@@ -22,7 +23,7 @@ class Login final : public userver::server::handlers::HttpHandlerJsonBase {
   static userver::yaml_config::Schema GetStaticConfigSchema();
 
  private:
-  UsersStorage& storage_;
+  jwt_auth::repositories::UsersRepository& storage_;
   std::string secret_;
 };
 

@@ -20,7 +20,9 @@ userver::formats::json::Value MakeError(std::string msg) {
 
 Search::Search(const userver::components::ComponentConfig& config,
                const userver::components::ComponentContext& context)
-    : HttpHandlerJsonBase(config, context), storage_(GetUsersStorage()) {}
+    : HttpHandlerJsonBase(config, context), storage_(context
+                .FindComponent<jwt_auth::repositories::UsersRepositoryComponent>()
+                .Get()) {}
 
 userver::formats::json::Value Search::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
@@ -52,8 +54,8 @@ userver::formats::json::Value Search::HandleRequestJsonThrow(
     User dto;
     dto.id = u.id;
     dto.login = u.login;
-    dto.first_name = u.firstName;
-    dto.last_name = u.lastName;
+    dto.first_name = u.first_name;
+    dto.last_name = u.last_name;
 
     resp.push_back(std::move(dto));
   }

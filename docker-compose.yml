@@ -1,6 +1,26 @@
 version: "3.9"
 
 services:
+  postgres:
+      image: postgres:15-alpine
+      container_name: jwt_auth_postgres
+      environment:
+        POSTGRES_USER: userver
+        POSTGRES_PASSWORD: userver
+        POSTGRES_DB: goals_db
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+        - ./schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+        - ./data.sql:/docker-entrypoint-initdb.d/2-data.sql
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U userver -d goals_db"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+      restart: unless-stopped
+
   userver:
     build:
       context: .
@@ -8,9 +28,16 @@ services:
     container_name: jwt_auth_service
     ports:
       - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      DB_CONNECTION: postgresql://userver:userver@postgres:5432/goals_db
     restart: unless-stopped
     cap_add:
       - SYS_PTRACE
     security_opt:
       - seccomp=unconfined
     user: "1000:1000"
+
+volumes:
+  postgres_data:

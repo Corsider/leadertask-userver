@@ -2,8 +2,10 @@
 
 #include <userver/server/handlers/http_handler_json_base.hpp>
 
-#include <goals_storage.hpp>
-#include <users_storage.hpp>
+#include <repositories/goals_repository.hpp>
+#include <repositories/goals_repository_component.hpp>
+#include <repositories/users_repository.hpp>
+#include <repositories/users_repository_component.hpp>
 
 namespace jwt_auth::goals {
 
@@ -20,8 +22,8 @@ class Create final : public userver::server::handlers::HttpHandlerJsonBase {
       userver::server::request::RequestContext& request_context) const override;
 
  private:
-  GoalsStorage& storage_;
-  UsersStorage& usersStorage_;
+  jwt_auth::repositories::GoalsRepository& storage_;
+  jwt_auth::repositories::UsersRepository& usersStorage_;
 };
 
 }  // namespace jwt_auth::goals

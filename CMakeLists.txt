@@ -6,7 +6,7 @@ include(DownloadUserver)
 
 find_package(
     userver
-    COMPONENTS core chaotic#
+    COMPONENTS core postgresql chaotic#
     QUIET
 )
 if(NOT userver_FOUND)
@@ -48,10 +48,14 @@ add_library(
     src/views/tasks/update.cpp
     src/views/tasks/list.cpp
     src/views/hello/handler.cpp #
+    src/repositories/goals_repository.cpp
+    src/repositories/tasks_repository.cpp
+    src/repositories/users_repository.cpp
 )
 target_link_libraries(
     ${PROJECT_NAME}_objs
     PUBLIC userver::core #
+    PUBLIC userver::postgresql
     PUBLIC jwt-cpp::jwt-cpp #
 )
 target_include_directories(${PROJECT_NAME}_objs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/)

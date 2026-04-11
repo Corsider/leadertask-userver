@@ -2,8 +2,10 @@
 
 #include <userver/server/handlers/http_handler_json_base.hpp>
 
-#include <goals_storage.hpp>
-#include <tasks_storage.hpp>
+#include <repositories/goals_repository.hpp>
+#include <repositories/tasks_repository.hpp>
+#include <repositories/goals_repository_component.hpp>
+#include <repositories/tasks_repository_component.hpp>
 
 namespace jwt_auth::tasks {
 
@@ -21,8 +23,8 @@ class UpdateTaskStatus final
       userver::server::request::RequestContext& request_context) const override;
 
  private:
-  GoalsStorage& goals_storage_;
-  TasksStorage& tasks_storage_;
+  jwt_auth::repositories::GoalsRepository& goals_storage_;
+  jwt_auth::repositories::TasksRepository& tasks_storage_;
 };
 
 }  // namespace jwt_auth::tasks

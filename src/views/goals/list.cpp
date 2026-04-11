@@ -23,7 +23,9 @@ userver::formats::json::Value MakeError(std::string msg) {
 
 List::List(const userver::components::ComponentConfig& config,
            const userver::components::ComponentContext& context)
-    : HttpHandlerJsonBase(config, context), storage_(GetGoalsStorage()) {}
+    : HttpHandlerJsonBase(config, context), storage_(context
+                .FindComponent<jwt_auth::repositories::GoalsRepositoryComponent>()
+                .Get()) {}
 
 userver::formats::json::Value List::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
@@ -38,7 +40,7 @@ userver::formats::json::Value List::HandleRequestJsonThrow(
     return MakeError("user_id not found in token");
   }
 
-  const auto goals = storage_.GetGoalsByUser(user_id);
+  const auto goals = storage_.GetByUser(user_id);
 
   GetGoalsResponseBody resp;
   resp.reserve(goals.size());

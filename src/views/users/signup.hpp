@@ -2,7 +2,8 @@
 
 #include <userver/server/handlers/http_handler_json_base.hpp>
 
-#include <users_storage.hpp>
+#include <repositories/users_repository_component.hpp>
+#include <repositories/users_repository.hpp>
 
 namespace jwt_auth::users {
 
@@ -19,7 +20,7 @@ class Signup final : public userver::server::handlers::HttpHandlerJsonBase {
       userver::server::request::RequestContext& context) const override;
 
  private:
-  UsersStorage& storage_;
+  jwt_auth::repositories::UsersRepository& storage_;
 };
 
 }  // namespace jwt_auth::users

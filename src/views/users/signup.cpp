@@ -19,7 +19,9 @@ userver::formats::json::Value MakeError(std::string message) {
 
 Signup::Signup(const userver::components::ComponentConfig& config,
                const userver::components::ComponentContext& context)
-    : HttpHandlerJsonBase(config, context), storage_(GetUsersStorage()) {}
+    : HttpHandlerJsonBase(config, context), storage_(context
+                .FindComponent<jwt_auth::repositories::UsersRepositoryComponent>()
+                .Get()) {}
 
 userver::formats::json::Value Signup::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
@@ -47,7 +49,7 @@ userver::formats::json::Value Signup::HandleRequestJsonThrow(
     }
 
     CreateUserResponseBody response;
-    response.user_id = *user_id; //////////////// todo fix
+    response.user_id = user_id->user_id; //////////////// todo fix
     return userver::formats::json::ValueBuilder{response}.ExtractValue();
 
   } catch (const std::exception& exc) {

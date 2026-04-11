@@ -23,8 +23,12 @@ userver::formats::json::Value MakeError(std::string msg) {
 Create::Create(const userver::components::ComponentConfig& config,
                const userver::components::ComponentContext& context)
     : HttpHandlerJsonBase(config, context),
-      storage_(GetGoalsStorage()),
-      usersStorage_(GetUsersStorage()) {}
+      storage_(context
+                .FindComponent<jwt_auth::repositories::GoalsRepositoryComponent>()
+                .Get()),
+      usersStorage_(context
+                .FindComponent<jwt_auth::repositories::UsersRepositoryComponent>()
+                .Get()) {}
 
 userver::formats::json::Value Create::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
@@ -48,14 +52,14 @@ userver::formats::json::Value Create::HandleRequestJsonThrow(
     return MakeError("user_id not found in token");
   }
 
-  if (!GetUsersStorage().UserExists(user_id)) {
+  if (!usersStorage_.UserExists(user_id)) {
     request.GetHttpResponse().SetStatus(
         userver::server::http::HttpStatus::kBadRequest);
     return MakeError("user doesnt not exist");
   }
 
   const auto goal =
-      storage_.CreateGoal(body.title, body.description.value_or(""), user_id);
+      storage_.CreateGoal(user_id, body.title, body.description.value_or(""));
 
   request.GetHttpResponse().SetStatus(
       userver::server::http::HttpStatus::kCreated);

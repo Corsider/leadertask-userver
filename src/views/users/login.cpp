@@ -25,7 +25,9 @@ userver::formats::json::Value MakeError(std::string message) {
 Login::Login(const userver::components::ComponentConfig& config,
              const userver::components::ComponentContext& context)
     : HttpHandlerJsonBase(config, context),
-      storage_(GetUsersStorage()),
+      storage_(context
+                .FindComponent<jwt_auth::repositories::UsersRepositoryComponent>()
+                .Get()),
       secret_(config["secret"].As<std::string>()) {}
 
 userver::formats::json::Value Login::HandleRequestJsonThrow(
@@ -40,7 +42,7 @@ userver::formats::json::Value Login::HandleRequestJsonThrow(
       return MakeError("login and password are required");
     }
 
-    const auto user = storage_.GetByLogin(body.login);
+    const auto user = storage_.GetByLoginWithPassword(body.login);
     if (!user || user->password != body.password) {
       request.GetHttpResponse().SetStatus(
           userver::server::http::HttpStatus::kUnauthorized);

@@ -53,8 +53,12 @@ UpdateTaskStatus::UpdateTaskStatus(
     const userver::components::ComponentConfig& config,
     const userver::components::ComponentContext& context)
     : HttpHandlerJsonBase(config, context),
-      goals_storage_(GetGoalsStorage()),
-      tasks_storage_(GetTasksStorage()) {}
+      goals_storage_(context
+                .FindComponent<jwt_auth::repositories::GoalsRepositoryComponent>()
+                .Get()),
+      tasks_storage_(context
+                .FindComponent<jwt_auth::repositories::TasksRepositoryComponent>()
+                .Get()) {}
 
 userver::formats::json::Value UpdateTaskStatus::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
@@ -90,8 +94,8 @@ userver::formats::json::Value UpdateTaskStatus::HandleRequestJsonThrow(
   const auto new_status = body.status;
   // TODO
 
-  const auto updated_task = tasks_storage_.UpdateTaskStatus(
-      goal_id, task_id, TaskStatusFromString(new_status));
+  const auto updated_task = tasks_storage_.UpdateStatus(
+      goal_id, task_id, new_status);
   if (!updated_task) {
     request.GetHttpResponse().SetStatus(
         userver::server::http::HttpStatus::kNotFound);

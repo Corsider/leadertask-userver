@@ -1,6 +1,7 @@
 #pragma once
 
-#include <goals_storage.hpp>
+#include <repositories/goals_repository.hpp>
+#include <repositories/goals_repository_component.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
 
 namespace jwt_auth::goals {
@@ -19,7 +20,7 @@ class List final : public userver::server::handlers::HttpHandlerJsonBase {
       userver::server::request::RequestContext& request_context) const override;
 
  private:
-  GoalsStorage& storage_;
+  jwt_auth::repositories::GoalsRepository& storage_;
 };
 
 }  // namespace jwt_auth::goals

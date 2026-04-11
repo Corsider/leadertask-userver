@@ -7,6 +7,7 @@
 #include <userver/server/handlers/ping.hpp>
 #include <userver/server/handlers/tests_control.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
+#include <userver/storages/postgres/component.hpp>
 
 #include <userver/utils/daemon_run.hpp>
 
@@ -24,6 +25,14 @@
 #include <views/users/search.hpp>
 #include <views/users/signup.hpp>
 
+#include <db/db_client.hpp>
+#include <repositories/goals_repository.hpp>
+#include <repositories/goals_repository_component.hpp>
+#include <repositories/tasks_repository.hpp>
+#include <repositories/tasks_repository_component.hpp>
+#include <repositories/users_repository.hpp>
+#include <repositories/users_repository_component.hpp>
+
 int main(int argc, char* argv[]) {
   userver::server::handlers::auth::RegisterAuthCheckerFactory<
       auth::jwt::JwtAuthCheckerFactory>();
@@ -35,6 +44,11 @@ int main(int argc, char* argv[]) {
           .Append<userver::clients::dns::Component>()
           .Append<userver::server::handlers::TestsControl>()
           .Append<userver::congestion_control::Component>()
+          .Append<userver::components::Postgres>("postgres")
+          .Append<jwt_auth::repositories::UsersRepositoryComponent>()
+          .Append<jwt_auth::repositories::TasksRepositoryComponent>()
+          .Append<jwt_auth::repositories::GoalsRepositoryComponent>()
+          .Append<jwt_auth::db::DbClient>()
           .Append<jwt_auth::hello::Handler>()
           .Append<jwt_auth::users::Login>()
           .Append<jwt_auth::users::Signup>()

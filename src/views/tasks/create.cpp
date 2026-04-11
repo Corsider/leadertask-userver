@@ -23,8 +23,12 @@ userver::formats::json::Value MakeError(std::string msg) {
 Create::Create(const userver::components::ComponentConfig& config,
                const userver::components::ComponentContext& context)
     : HttpHandlerJsonBase(config, context),
-      tasks_(GetTasksStorage()),
-      goals_(GetGoalsStorage()) {}
+      tasks_(context
+                .FindComponent<jwt_auth::repositories::TasksRepositoryComponent>()
+                .Get()),
+      goals_(context
+                .FindComponent<jwt_auth::repositories::GoalsRepositoryComponent>()
+                .Get()) {}
 
 userver::formats::json::Value Create::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,

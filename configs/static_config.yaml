@@ -22,6 +22,24 @@ components_manager:
                     level: info
                     overflow_behavior: discard # Drop logs if the system is too busy to write them down.
 
+        postgres:
+            dbconnection: postgresql://userver:userver@postgres:5432/goals_db
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async
+            sync-start: true
+        
+        users-repository:
+            {}
+        
+        tasks-repository:
+            {}
+
+        goals-repository:
+            {}
+        
+        db-client:
+            load-enabled: true
+
         # Dynamic config options. Cache is disabled, updates are disabled.
         dynamic-config:
             # For most of userver dynamic configs, defaults are used, some are overridden here.
