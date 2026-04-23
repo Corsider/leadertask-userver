@@ -76,7 +76,8 @@ userver::formats::json::Value UpdateTaskStatus::HandleRequestJsonThrow(
     return MakeError("invalid path parameters");
   }
 
-  if (!goals_storage_.GetById(goal_id)) {
+  const auto goal_id_str = request.GetPathArg("goalId");
+  if (!goals_storage_.GetById(goal_id_str)) {
     request.GetHttpResponse().SetStatus(
         userver::server::http::HttpStatus::kNotFound);
     return MakeError("goal not found");

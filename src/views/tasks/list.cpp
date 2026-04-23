@@ -55,7 +55,7 @@ userver::formats::json::Value ListTasks::HandleRequestJsonThrow(
 
 
 // TODO
-  const auto goal = goals_storage_.GetById(goal_id);
+  const auto goal = goals_storage_.GetById(goal_id_str);
   if (!goal) {
     request.GetHttpResponse().SetStatus(
         userver::server::http::HttpStatus::kNotFound);

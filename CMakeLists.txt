@@ -6,7 +6,7 @@ include(DownloadUserver)
 
 find_package(
     userver
-    COMPONENTS core postgresql chaotic#
+    COMPONENTS core postgresql mongo chaotic#
     QUIET
 )
 if(NOT userver_FOUND)
@@ -15,18 +15,20 @@ if(NOT userver_FOUND)
 endif()
 
 #finding jwt-cpp
-find_package(jwt-cpp QUIET)
-if (NOT jwt-cpp_FOUND)
-  message("Loading JWT-CPP")
-  include(cmake/get_cpm.cmake)
-  # download jwt-cpp
-  CPMAddPackage(
-    NAME jwt-cpp
-    GITHUB_REPOSITORY Thalhammer/jwt-cpp
-    VERSION 0.7.2
-    OPTIONS "JWT_BUILD_EXAMPLES OFF" "JWT_BUILD_TESTS OFF" "JWT_CMAKE_FILES_INSTALL ON"
-  )
-endif()
+# find_package(jwt-cpp QUIET)
+# if (NOT jwt-cpp_FOUND)
+#   message("Loading JWT-CPP")
+#   include(cmake/get_cpm.cmake)
+#   # download jwt-cpp
+#   CPMAddPackage(
+#     NAME jwt-cpp
+#     GIT_REPOSITORY https://github.com/Thalhammer/jwt-cpp.git
+#     GIT_TAG 0.7.2
+#     OPTIONS "JWT_BUILD_EXAMPLES OFF" "JWT_BUILD_TESTS OFF" "JWT_CMAKE_FILES_INSTALL ON"
+#     )
+# endif()
+add_subdirectory(third_party/jwt-cpp)
+#target_link_libraries(${PROJECT_NAME}_objs PUBLIC jwt-cpp)
 
 userver_setup_environment()
 
@@ -56,7 +58,9 @@ target_link_libraries(
     ${PROJECT_NAME}_objs
     PUBLIC userver::core #
     PUBLIC userver::postgresql
-    PUBLIC jwt-cpp::jwt-cpp #
+    PUBLIC userver::mongo
+    #PUBLIC jwt-cpp::jwt-cpp #
+    PUBLIC jwt-cpp
 )
 target_include_directories(${PROJECT_NAME}_objs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 

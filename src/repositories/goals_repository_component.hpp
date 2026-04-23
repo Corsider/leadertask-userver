@@ -1,7 +1,8 @@
 #pragma once
 
 #include <userver/components/component.hpp>
-#include <userver/storages/postgres/component.hpp>
+#include <userver/storages/mongo/component.hpp>
+#include <userver/storages/mongo/pool.hpp>
 
 #include <repositories/goals_repository.hpp>
 
@@ -17,8 +18,9 @@ class GoalsRepositoryComponent final
       const userver::components::ComponentContext& context)
       : ComponentBase(config, context),
         repo_(context
-                  .FindComponent<userver::components::Postgres>("postgres")
-                  .GetCluster()) {}
+                  .FindComponent<userver::components::Mongo>("mongo")
+                  .GetPool()
+                  ->GetCollection("goals")) {}
 
   GoalsRepository& Get() { return repo_; }
 

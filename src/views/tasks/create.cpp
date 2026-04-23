@@ -65,7 +65,7 @@ userver::formats::json::Value Create::HandleRequestJsonThrow(
     return MakeError("invalid goalId");
   }
 
-  const auto goal = goals_.GetById(goal_id);
+  const auto goal = goals_.GetById(goal_id_str);
   if (!goal) {
     request.GetHttpResponse().SetStatus(
         userver::server::http::HttpStatus::kNotFound);

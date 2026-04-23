@@ -21,6 +21,18 @@ services:
         retries: 5
       restart: unless-stopped
 
+  mongo:
+    image: mongo:7.0
+    container_name: jwt_auth_mongo
+    environment:
+      MONGO_INITDB_DATABASE: goals_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./data.js:/docker-entrypoint-initdb.d/init.js
+    restart: unless-stopped
+
   userver:
     build:
       context: .
@@ -30,6 +42,7 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
+      - mongo
     environment:
       DB_CONNECTION: postgresql://userver:userver@postgres:5432/goals_db
     restart: unless-stopped
@@ -41,3 +54,4 @@ services:
 
 volumes:
   postgres_data:
+  mongo_data:

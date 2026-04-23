@@ -27,6 +27,10 @@ components_manager:
             blocking_task_processor: fs-task-processor
             dns_resolver: async
             sync-start: true
+
+        mongo:
+            dbconnection: mongodb://mongo:27017/goals_db
+            dns_resolver: async
         
         users-repository:
             {}

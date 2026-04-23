@@ -8,6 +8,7 @@
 #include <userver/server/handlers/tests_control.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/storages/postgres/component.hpp>
+#include <userver/storages/mongo/component.hpp>
 
 #include <userver/utils/daemon_run.hpp>
 
@@ -45,6 +46,7 @@ int main(int argc, char* argv[]) {
           .Append<userver::server::handlers::TestsControl>()
           .Append<userver::congestion_control::Component>()
           .Append<userver::components::Postgres>("postgres")
+          .Append<userver::components::Mongo>("mongo")
           .Append<jwt_auth::repositories::UsersRepositoryComponent>()
           .Append<jwt_auth::repositories::TasksRepositoryComponent>()
           .Append<jwt_auth::repositories::GoalsRepositoryComponent>()
